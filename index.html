@@ -182,6 +182,16 @@
     border-color: var(--forest-mid);
     background: white;
   }
+  .field input.valid { border-color: var(--forest-light); }
+  .field input.invalid { border-color: var(--danger); background: #fdf8f8; }
+  .field-error {
+    font-size: 12px;
+    color: var(--danger);
+    margin-top: 5px;
+    display: none;
+    padding-left: 2px;
+  }
+  .field-error.show { display: block; }
   .field select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4a46' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -586,6 +596,7 @@
     <div class="field">
       <label><span data-en>Nightsbridge booking reference</span><span data-zu>Inombolo ye-bhukho ye-Nightsbridge</span> <span class="req">*</span></label>
       <input type="text" id="bookingRef" placeholder="e.g. NB-2026-XXXXX" autocomplete="off" autocapitalize="characters">
+      <div class="field-error" id="err-bookingRef"><span data-en>Please enter a valid booking reference (min. 3 characters)</span><span data-zu>Sicela ufake inombolo ye-bhukho evumelekile</span></div>
     </div>
   </div>
 
@@ -610,22 +621,26 @@
     <div class="field">
       <label><span data-en>Full name</span><span data-zu>Igama eligcwele</span> <span class="req">*</span></label>
       <input type="text" id="guestName" placeholder="As per ID or passport" autocomplete="name">
+      <div class="field-error" id="err-guestName"><span data-en>Please enter first and last name</span><span data-zu>Sicela ufake igama lokuqala nelikhulu</span></div>
     </div>
 
     <div class="field-row">
       <div class="field">
         <label><span data-en>Nationality</span><span data-zu>Ubuzwe</span> <span class="req">*</span></label>
         <input type="text" id="guestNationality" placeholder="e.g. South African">
+        <div class="field-error" id="err-guestNationality"><span data-en>Please enter nationality</span><span data-zu>Sicela ufake ubuzwe</span></div>
       </div>
       <div class="field">
         <label><span data-en>ID / Passport no.</span><span data-zu>Inombolo ye-ID</span> <span class="req">*</span></label>
         <input type="text" id="guestID" placeholder="ID or passport number" autocapitalize="characters">
+        <div class="field-error" id="err-guestID"><span data-en>Min. 6 characters required</span><span data-zu>Okungenani izinhlamvu eziyi-6 ziyadingeka</span></div>
       </div>
     </div>
 
     <div class="field">
       <label><span data-en>Email address</span><span data-zu>Ikheli le-imeyili</span></label>
       <input type="email" id="guestEmail" placeholder="guest@example.com" autocomplete="email">
+      <div class="field-error" id="err-guestEmail"><span data-en>Please enter a valid email address</span><span data-zu>Sicela ufake ikheli le-imeyili elivumelekile</span></div>
     </div>
   </div>
 
@@ -636,6 +651,7 @@
     <div class="field">
       <label><span data-en>Emergency contact name</span><span data-zu>Igama lomuntu wokuxhumana</span> <span class="req">*</span></label>
       <input type="text" id="emergencyName" placeholder="Full name" autocomplete="off">
+      <div class="field-error" id="err-emergencyName"><span data-en>Please enter first and last name</span><span data-zu>Sicela ufake igama lokuqala nelikhulu</span></div>
     </div>
     <div class="field-row">
       <div class="field">
@@ -653,6 +669,7 @@
       <div class="field">
         <label><span data-en>Phone number</span><span data-zu>Inombolo yocingo</span> <span class="req">*</span></label>
         <input type="tel" id="emergencyPhone" placeholder="+27 XX XXX XXXX" autocomplete="tel">
+        <div class="field-error" id="err-emergencyPhone"><span data-en>Must start with country code e.g. +27</span><span data-zu>Kufele uqale ngekhodi yezwe e.g. +27</span></div>
       </div>
     </div>
   </div>
@@ -772,6 +789,7 @@
       <input type="text" id="signatureName" placeholder="Type your full name here to sign" autocomplete="off">
       <div class="sig-date" id="sigDateDisplay"></div>
     </div>
+    <div class="field-error" id="err-signatureName"><span data-en>Signature must match the full name entered on step 2</span><span data-zu>Isikhwama kufanele sifane negama eligcwele elifakwe ezigabeni 2</span></div>
   </div>
 
   <div id="indemnityAlert" class="alert alert-error"><span data-en>Please confirm all declarations and provide your signature.</span><span data-zu>Sicela uqinisekise zonke izimemezelo bese unikeza isikhwama sakho.</span></div>
@@ -823,9 +841,9 @@
 
   <div id="exportSection" style="display:none;">
     <div class="divider"></div>
-    <p style="font-size: 13px; color: var(--ink-light); margin-bottom: 12px;"><span data-en>Export all pending records as a JSON file. Send to reservations or upload to SharePoint manually.</span><span data-zu>Thumela yonke imirekodi elindile njengefayela le-JSON. Thumela ezibhukweni noma layisha ku-SharePoint ngesandla.</span></p>
-    <button class="btn btn-primary" onclick="exportJSON()"><span data-en>Export all as JSON file</span><span data-zu>Thumela konke njengefayela le-JSON</span></button>
-    <button class="btn btn-danger" onclick="confirmClear()"><span data-en>Clear exported records</span><span data-zu>Susa imirekodi ethunyiwe</span></button>
+    <p style="font-size: 13px; color: var(--ink-light); margin-bottom: 12px;"><span data-en>Sync pending records to SharePoint. Records will be marked as synced once uploaded.</span><span data-zu>Vumelanisa imirekodi elindile ne-SharePoint. Imirekodi izobekwa uphawu njengegcwaliselwe ngemuva kokulayishwa.</span></p>
+    <button class="btn btn-primary" onclick="exportJSON()"><span data-en>Sync with SharePoint</span><span data-zu>Vumelanisa ne-SharePoint</span></button>
+    <button class="btn btn-danger" onclick="confirmClear()"><span data-en>Clear synced records</span><span data-zu>Susa imirekodi evumelanisiwe</span></button>
   </div>
 </div>
 
@@ -846,6 +864,54 @@
       document.getElementById('btnEN').classList.add('active');
       document.getElementById('btnZU').classList.remove('active');
     }
+  }
+
+  function showErr(id, show) {
+    var el = document.getElementById('err-' + id);
+    if (!el) return;
+    el.classList.toggle('show', show);
+  }
+
+  function setValidity(id, valid) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('valid', valid);
+    el.classList.toggle('invalid', !valid);
+    showErr(id, !valid);
+  }
+
+  function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function isValidPhone(v) { return /^\+\d{7,15}$/.test(v.replace(/\s/g,'')); }
+  function isTwoWords(v) { return v.trim().split(/\s+/).length >= 2; }
+
+  function attachValidation() {
+    var rules = {
+      'bookingRef':       function(v){ return v.trim().length >= 3; },
+      'guestName':        function(v){ return isTwoWords(v); },
+      'guestNationality': function(v){ return v.trim().length >= 2; },
+      'guestID':          function(v){ return v.trim().length >= 6; },
+      'guestEmail':       function(v){ return v.trim() === '' || isValidEmail(v.trim()); },
+      'emergencyName':    function(v){ return isTwoWords(v); },
+      'emergencyPhone':   function(v){ return isValidPhone(v); },
+      'signatureName':    function(v){ return v.trim().toLowerCase() === (document.getElementById('guestName').value.trim().toLowerCase()); }
+    };
+    Object.keys(rules).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', function() {
+        if (el.value.trim() === '') {
+          el.classList.remove('valid','invalid');
+          showErr(id, false);
+          return;
+        }
+        setValidity(id, rules[id](el.value));
+      });
+      el.addEventListener('blur', function() {
+        if (el.value.trim() === '' && ['bookingRef','guestName','guestNationality','guestID','emergencyName','emergencyPhone'].indexOf(id) > -1) {
+          setValidity(id, false);
+        }
+      });
+    });
   }
 
   function getSASTTime() {
@@ -886,10 +952,8 @@
   function goToStep2() {
     var ref = document.getElementById('bookingRef').value.trim();
     var alert = document.getElementById('staffAlert');
-    if (!state.lodge || !ref) {
-      alert.classList.add('show');
-      return;
-    }
+    if (!state.lodge) { alert.classList.add('show'); return; }
+    if (ref.length < 3) { setValidity('bookingRef', false); alert.classList.add('show'); return; }
     alert.classList.remove('show');
     state.bookingRef = ref;
     showScreen('guest');
@@ -899,15 +963,20 @@
     var name = document.getElementById('guestName').value.trim();
     var nationality = document.getElementById('guestNationality').value.trim();
     var id = document.getElementById('guestID').value.trim();
+    var email = document.getElementById('guestEmail').value.trim();
     var emName = document.getElementById('emergencyName').value.trim();
     var emRel = document.getElementById('emergencyRelation').value;
     var emPhone = document.getElementById('emergencyPhone').value.trim();
     var alert = document.getElementById('guestAlert');
-    if (!name || !nationality || !id || !emName || !emRel || !emPhone) {
-      alert.classList.add('show');
-      alert.textContent = 'Please complete all required fields.';
-      return;
-    }
+    var valid = true;
+    if (!isTwoWords(name)) { setValidity('guestName', false); valid = false; }
+    if (nationality.length < 2) { setValidity('guestNationality', false); valid = false; }
+    if (id.length < 6) { setValidity('guestID', false); valid = false; }
+    if (email && !isValidEmail(email)) { setValidity('guestEmail', false); valid = false; }
+    if (!isTwoWords(emName)) { setValidity('emergencyName', false); valid = false; }
+    if (!isValidPhone(emPhone)) { setValidity('emergencyPhone', false); valid = false; }
+    if (!emRel) { valid = false; }
+    if (!valid) { alert.classList.add('show'); return; }
     alert.classList.remove('show');
     showScreen('health');
   }
@@ -926,13 +995,11 @@
     var indemnityOk = document.getElementById('indemnityConfirm').checked;
     var minorOk = document.getElementById('minorConfirm').checked;
     var sig = document.getElementById('signatureName').value.trim();
+    var guestName = document.getElementById('guestName').value.trim();
     var alert = document.getElementById('indemnityAlert');
-
-    if (!indemnityOk || !minorOk || !sig) {
-      alert.classList.add('show');
-      alert.textContent = !sig ? 'Please type your full name as your signature.' : 'Please confirm all declarations before signing.';
-      return;
-    }
+    var sigMatch = sig.toLowerCase() === guestName.toLowerCase();
+    if (!sig || !sigMatch) { setValidity('signatureName', false); alert.classList.add('show'); alert.querySelector('[data-en]').textContent = !sig ? 'Please type your full name as your signature.' : 'Signature must match the full name entered on step 2.'; return; }
+    if (!indemnityOk || !minorOk) { alert.classList.add('show'); return; }
     alert.classList.remove('show');
 
     var now = getSASTTime();
@@ -1079,6 +1146,7 @@
   }
 
   updateQueueBadge();
+  attachValidation();
 </script>
 </body>
 </html>
