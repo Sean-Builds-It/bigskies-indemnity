@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Big Skies">
+<meta name="theme-color" content="#1a3a2a">
+<title>Big Skies — Guest Indemnity</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --forest: #1a3a2a;
+    --forest-mid: #2d5c40;
+    --forest-light: #4a8c60;
+    --sand: #f5f0e8;
+    --sand-dark: #e8e0d0;
+    --cream: #faf7f2;
+    --ink: #1c1c1a;
+    --ink-mid: #4a4a46;
+    --ink-light: #8a8a84;
+    --accent: #c8a96e;
+    --accent-light: #e8d4a8;
+    --danger: #8b2e2e;
+    --success: #2d5c40;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: var(--forest);
+    color: white;
+    padding: 20px 24px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo-area { display: flex; flex-direction: column; }
+  .logo-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: white;
+  }
+  .logo-tagline {
+    font-size: 11px;
+    color: var(--accent-light);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .queue-badge {
+    background: var(--accent);
+    color: var(--forest);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .queue-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--forest);
+  }
+  .queue-dot.pending { background: var(--danger); }
+
+  /* SCREENS */
+  .screen { display: none; padding: 24px; max-width: 680px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  /* STEP INDICATOR */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+  .step {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    padding: 8px 4px;
+    border-bottom: 2px solid var(--sand-dark);
+    transition: all 0.2s;
+  }
+  .step.active {
+    color: var(--forest);
+    border-bottom-color: var(--forest);
+    font-weight: 500;
+  }
+  .step.done {
+    color: var(--forest-light);
+    border-bottom-color: var(--forest-light);
+  }
+
+  /* CARDS */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--sand-dark);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--forest);
+    margin-bottom: 4px;
+  }
+  .card-subtitle {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 16px;
+  }
+
+  /* FORM ELEMENTS */
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    margin-bottom: 6px;
+  }
+  .field .zulu-label {
+    font-size: 11px;
+    color: var(--ink-light);
+    font-style: italic;
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--sand-dark);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    background: var(--cream);
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--forest-mid);
+    background: white;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4a46' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* LODGE BUTTONS */
+  .lodge-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 8px; }
+  .lodge-btn {
+    border: 1.5px solid var(--sand-dark);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    background: var(--cream);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .lodge-btn:active { transform: scale(0.98); }
+  .lodge-btn.selected {
+    border-color: var(--forest);
+    background: white;
+    box-shadow: inset 3px 0 0 var(--forest);
+  }
+  .lodge-btn-name {
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .lodge-btn-desc {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-top: 2px;
+  }
+  .lodge-btn.selected .lodge-btn-name { color: var(--forest); }
+
+  /* CHECKBOX */
+  .checkbox-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--sand-dark);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-bottom: 10px;
+    background: var(--cream);
+    transition: border-color 0.15s;
+  }
+  .checkbox-field input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 1.5px solid var(--sand-dark);
+    border-radius: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: white;
+    cursor: pointer;
+    margin-top: 1px;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .checkbox-field input[type="checkbox"]:checked {
+    background: var(--forest);
+    border-color: var(--forest);
+  }
+  .checkbox-field input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px; top: 2px;
+    width: 6px; height: 10px;
+    border: 2px solid white;
+    border-top: none; border-left: none;
+    transform: rotate(45deg);
+  }
+  .checkbox-field-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
+  .checkbox-field-text .zulu { font-size: 12px; color: var(--ink-light); font-style: italic; display: block; margin-top: 2px; }
+
+  /* INDEMNITY TEXT */
+  .indemnity-box {
+    background: var(--sand);
+    border: 1px solid var(--sand-dark);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    max-height: 260px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+  }
+  .indemnity-box h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: var(--forest);
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .indemnity-box p { margin-bottom: 10px; }
+  .indemnity-box .zulu-section {
+    border-top: 1px solid var(--sand-dark);
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+
+  /* SIGNATURE */
+  .sig-field {
+    border: 2px solid var(--sand-dark);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    background: white;
+    margin-bottom: 12px;
+  }
+  .sig-field input {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--sand-dark);
+    outline: none;
+    color: var(--ink);
+  }
+  .sig-field input::placeholder { color: var(--ink-light); font-size: 16px; font-style: normal; }
+  .sig-date {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: var(--forest);
+    color: white;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { background: var(--forest-mid); }
+  .btn-primary:disabled { background: var(--ink-light); cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--forest);
+    border: 1.5px solid var(--forest);
+    margin-top: 10px;
+  }
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1.5px solid var(--danger);
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  /* QUEUE SCREEN */
+  .queue-item {
+    background: white;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--sand-dark);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .queue-item-info { flex: 1; }
+  .queue-item-name { font-weight: 500; font-size: 15px; }
+  .queue-item-meta { font-size: 12px; color: var(--ink-light); margin-top: 2px; }
+  .status-pill {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+  .status-pending { background: #fff3e0; color: #8b5e00; }
+  .status-exported { background: #e8f5e9; color: #2d5c40; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-light);
+  }
+  .empty-state .big-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ALERTS */
+  .alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .alert.show { display: block; }
+  .alert-error { background: #fdf0f0; border: 1px solid #f5c2c2; color: var(--danger); }
+  .alert-success { background: #edf7f0; border: 1px solid #a8d8b5; color: var(--success); }
+
+  /* OFFLINE BANNER */
+  .offline-banner {
+    background: var(--accent);
+    color: var(--forest);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    padding: 8px;
+    display: none;
+    letter-spacing: 0.04em;
+  }
+  .offline-banner.show { display: block; }
+
+  /* SUCCESS SCREEN */
+  .success-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--forest);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .success-icon svg { width: 36px; height: 36px; }
+  .success-screen { text-align: center; padding: 40px 24px; }
+  .success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--forest);
+    margin-bottom: 8px;
+  }
+  .success-screen p { color: var(--ink-light); font-size: 15px; margin-bottom: 6px; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--sand-dark); margin: 20px 0; }
+
+  /* SECTION HEADING */
+  .section-heading {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 12px;
+    margin-top: 4px;
+  }
+
+  /* MINOR COUNTER */
+  .counter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1.5px solid var(--sand-dark);
+    border-radius: var(--radius-sm);
+    background: var(--cream);
+  }
+  .counter-label { font-size: 14px; color: var(--ink); }
+  .counter-controls { display: flex; align-items: center; gap: 14px; }
+  .counter-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--forest);
+    background: transparent;
+    color: var(--forest);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .counter-value { font-size: 18px; font-weight: 500; min-width: 24px; text-align: center; }
+
+  /* REQUIRED */
+  .req { color: #8b2e2e; }
+
+  /* SCROLL HINT */
+  .scroll-hint {
+    font-size: 12px;
+    color: var(--ink-light);
+    text-align: center;
+    margin-top: -8px;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+
+  /* LANGUAGE TOGGLE */
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 3px;
+    gap: 2px;
+    margin-right: 10px;
+  }
+  .lang-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+  }
+  .lang-btn.active {
+    background: white;
+    color: var(--forest);
+  }
+
+  /* LANGUAGE-SWITCHED TEXT */
+  [data-en], [data-zu] { transition: opacity 0.1s; }
+  body.lang-zu [data-en] { display: none !important; }
+  body.lang-zu [data-zu] { display: block !important; }
+  body:not(.lang-zu) [data-zu] { display: none !important; }
+  body:not(.lang-zu) [data-en] { display: block !important; }
+  span[data-en], span[data-zu] { display: inline !important; }
+  body.lang-zu span[data-en] { display: none !important; }
+  body.lang-zu span[data-zu] { display: inline !important; }
+  body:not(.lang-zu) span[data-zu] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="offline-banner" id="offlineBanner">
+  You are offline — form will save locally and sync when connected
+</div>
+
+<header class="app-header">
+  <div class="logo-area">
+    <span class="logo-name">Big Skies</span>
+    <span class="logo-tagline"><span data-en>Guest Indemnity</span><span data-zu>Isivumelwano Sokungeniswa</span></span>
+  </div>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btnZU" onclick="setLang('zu')">ZU</button>
+    </div>
+    <div class="queue-badge" onclick="showScreen('queue')">
+      <div class="queue-dot" id="queueDot"></div>
+      <span id="queueCount">Queue</span>
+    </div>
+  </div>
+</header>
+
+<!-- SCREEN 1: STAFF CHECK-IN -->
+<div class="screen active" id="screen-staff">
+  <div class="steps">
+    <div class="step active"><span data-en>1. Lodge</span><span data-zu>1. Ikhamu</span></div>
+    <div class="step"><span data-en>2. Guest</span><span data-zu>2. Isivakashi</span></div>
+    <div class="step"><span data-en>3. Health</span><span data-zu>3. Ezempilo</span></div>
+    <div class="step"><span data-en>4. Indemnity</span><span data-zu>4. Isivumelwano</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-en>Staff check-in</span><span data-zu>Ukungena kwabasebenzi</span></div>
+    <div class="card-subtitle"><span data-en>Select lodge and enter booking reference</span><span data-zu>Khetha ikhamu bese ufaka inombolo ye-bhukho</span></div>
+
+    <div class="field">
+      <label><span data-en>Select lodge</span><span data-zu>Khetha ikhamu</span> <span class="req">*</span></label>
+      <div class="lodge-grid">
+        <button class="lodge-btn" onclick="selectLodge('Ubunye', this)" data-lodge="Ubunye">
+          <div class="lodge-btn-name">Big Skies Ubunye</div>
+          <div class="lodge-btn-desc"><span data-en>Bespoke &amp; intimate — premium tailored stay</span><span data-zu>Ekhethekile nothando — ukuhlala okukhethekile</span></div>
+        </button>
+        <button class="lodge-btn" onclick="selectLodge('Gugs', this)" data-lodge="Gugs">
+          <div class="lodge-btn-name">Big Skies Gugs</div>
+          <div class="lodge-btn-desc"><span data-en>Family comfortable — relaxed groups</span><span data-zu>Umndeni onokuphumula — amaqembu athulile</span></div>
+        </button>
+        <button class="lodge-btn" onclick="selectLodge('Research', this)" data-lodge="Research">
+          <div class="lodge-btn-name">Big Skies Research</div>
+          <div class="lodge-btn-desc"><span data-en>Self-catered sole use — coastal views</span><span data-zu>Ukuzisebenzela kuphela — imibono yenxanxathela</span></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><span data-en>Nightsbridge booking reference</span><span data-zu>Inombolo ye-bhukho ye-Nightsbridge</span> <span class="req">*</span></label>
+      <input type="text" id="bookingRef" placeholder="e.g. NB-2026-XXXXX" autocomplete="off" autocapitalize="characters">
+    </div>
+  </div>
+
+  <div id="staffAlert" class="alert alert-error"><span data-en>Please select a lodge and enter the booking reference.</span><span data-zu>Sicela ukhethe ikhamu bese ufaka inombolo ye-bhukho.</span></div>
+
+  <button class="btn btn-primary" onclick="goToStep2()"><span data-en>Continue to guest details →</span><span data-zu>Qhubeka ngemininingwane yesivakashi →</span></button>
+</div>
+
+<!-- SCREEN 2: GUEST DETAILS -->
+<div class="screen" id="screen-guest">
+  <div class="steps">
+    <div class="step done"><span data-en>1. Lodge</span><span data-zu>1. Ikhamu</span></div>
+    <div class="step active"><span data-en>2. Guest</span><span data-zu>2. Isivakashi</span></div>
+    <div class="step"><span data-en>3. Health</span><span data-zu>3. Ezempilo</span></div>
+    <div class="step"><span data-en>4. Indemnity</span><span data-zu>4. Isivumelwano</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-en>Guest details</span><span data-zu>Imininingwane yesivakashi</span></div>
+    <div class="card-subtitle"><span data-en>Primary guest — indemnity holder</span><span data-zu>Isivakashi esiyinhloko — uMnini we-indemnity</span></div>
+
+    <div class="field">
+      <label><span data-en>Full name</span><span data-zu>Igama eligcwele</span> <span class="req">*</span></label>
+      <input type="text" id="guestName" placeholder="As per ID or passport" autocomplete="name">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label><span data-en>Nationality</span><span data-zu>Ubuzwe</span> <span class="req">*</span></label>
+        <input type="text" id="guestNationality" placeholder="e.g. South African">
+      </div>
+      <div class="field">
+        <label><span data-en>ID / Passport no.</span><span data-zu>Inombolo ye-ID</span> <span class="req">*</span></label>
+        <input type="text" id="guestID" placeholder="ID or passport number" autocapitalize="characters">
+      </div>
+    </div>
+
+    <div class="field">
+      <label><span data-en>Email address</span><span data-zu>Ikheli le-imeyili</span></label>
+      <input type="email" id="guestEmail" placeholder="guest@example.com" autocomplete="email">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-en>Emergency contact</span><span data-zu>Umuntu wokuxhumana uma kunesimo esiphuthumayo</span></div>
+    <div class="card-subtitle"><span data-en>Someone we can reach if needed</span><span data-zu>Umuntu esingaxhumana naye uma kudingeka</span></div>
+
+    <div class="field">
+      <label><span data-en>Emergency contact name</span><span data-zu>Igama lomuntu wokuxhumana</span> <span class="req">*</span></label>
+      <input type="text" id="emergencyName" placeholder="Full name" autocomplete="off">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label><span data-en>Relationship</span><span data-zu>Ubudlelwano</span> <span class="req">*</span></label>
+        <select id="emergencyRelation">
+          <option value=""><span data-en>Select...</span></option>
+          <option>Spouse / Partner</option>
+          <option>Parent</option>
+          <option>Sibling</option>
+          <option>Child</option>
+          <option>Friend</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label><span data-en>Phone number</span><span data-zu>Inombolo yocingo</span> <span class="req">*</span></label>
+        <input type="tel" id="emergencyPhone" placeholder="+27 XX XXX XXXX" autocomplete="tel">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-en>Travelling party</span><span data-zu>Abantu abahamba nabo</span></div>
+    <div class="card-subtitle"><span data-en>Tell us who is travelling with you</span><span data-zu>Sazise ukuthi ubani ohamba nawe</span></div>
+
+    <div class="section-heading"><span data-en>Additional adults</span><span data-zu>Abantu abadala obangeziwe</span></div>
+    <div class="counter-row" style="margin-bottom: 12px;">
+      <div class="counter-label"><span data-en>Adults (18+) besides primary guest</span><span data-zu>Abantu abadala ngaphandle komnini</span></div>
+      <div class="counter-controls">
+        <button class="counter-btn" onclick="changeCount('adults', -1)">−</button>
+        <span class="counter-value" id="adultsCount">0</span>
+        <button class="counter-btn" onclick="changeCount('adults', 1)">+</button>
+      </div>
+    </div>
+
+    <div class="section-heading"><span data-en>Minors travelling</span><span data-zu>Izingane ezihamba nabo</span></div>
+    <div class="counter-row">
+      <div class="counter-label"><span data-en>Children under 18</span><span data-zu>Izingane ezineminyaka engaphansi kwa-18</span></div>
+      <div class="counter-controls">
+        <button class="counter-btn" onclick="changeCount('minors', -1)">−</button>
+        <span class="counter-value" id="minorsCount">0</span>
+        <button class="counter-btn" onclick="changeCount('minors', 1)">+</button>
+      </div>
+    </div>
+
+    <div id="minorGuardianField" style="display:none; margin-top: 14px;">
+      <div class="field">
+        <label><span data-en>Guardian / parent confirmation</span><span data-zu>Ukuqinisekisa komzali noma umgcini</span> <span class="req">*</span></label>
+        <select id="guardianStatus">
+          <option value=""><span data-en>Select...</span></option>
+          <option value="parent"><span data-en>I am the parent of all minors listed</span></option>
+          <option value="guardian"><span data-en>I am the legal guardian of all minors listed</span></option>
+          <option value="consent"><span data-en>I have written consent from parents / guardians</span></option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="guestAlert" class="alert alert-error"><span data-en>Please complete all required fields.</span><span data-zu>Sicela ugcwalise wonke amasimu adingekayo.</span></div>
+
+  <button class="btn btn-primary" onclick="goToStep3()"><span data-en>Continue to health declaration →</span><span data-zu>Qhubeka nesimemezelo sezempilo →</span></button>
+  <button class="btn btn-secondary" onclick="showScreen('staff')"><span data-en>← Back</span><span data-zu>← Emuva</span></button>
+</div>
+
+<!-- SCREEN 3: HEALTH & MEDICAL -->
+<div class="screen" id="screen-health">
+  <div class="steps">
+    <div class="step done"><span data-en>1. Lodge</span><span data-zu>1. Ikhamu</span></div>
+    <div class="step done"><span data-en>2. Guest</span><span data-zu>2. Isivakashi</span></div>
+    <div class="step active"><span data-en>3. Health</span><span data-zu>3. Ezempilo</span></div>
+    <div class="step"><span data-en>4. Indemnity</span><span data-zu>4. Isivumelwano</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-en>Health declaration</span><span data-zu>Isimemezelo sezempilo</span></div>
+    <div class="card-subtitle"><span data-en>For the safety of all guests and staff</span><span data-zu>Ukuphepha kwazo zonke izivakashi nabasebenzi</span></div>
+
+    <div class="field">
+      <label><span data-en>Medical conditions</span><span data-zu>Izimo zezempilo</span></label>
+      <textarea id="medicalConditions" placeholder="List any medical conditions, chronic illnesses, or disabilities relevant to your stay. Leave blank if none."></textarea>
+    </div>
+
+    <div class="field">
+      <label><span data-en>Allergies</span><span data-zu>Izinto ezikhuzayo (allergies)</span></label>
+      <textarea id="allergies" placeholder="Food, environmental, or medication allergies. Leave blank if none." style="min-height: 60px;"></textarea>
+    </div>
+
+    <div class="field">
+      <label><span data-en>Current medications</span><span data-zu>Imithi ethathwa njengamanje</span></label>
+      <textarea id="medications" placeholder="List any medications being taken. Leave blank if none." style="min-height: 60px;"></textarea>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-heading"><span data-en>Please confirm</span><span data-zu>Sicela uqinisekise</span> <span class="req">*</span></div>
+
+    <label class="checkbox-field">
+      <input type="checkbox" id="healthConfirm">
+      <div class="checkbox-field-text">
+        <span data-en>I confirm that the health information provided above is accurate and complete to the best of my knowledge.</span>
+        <span data-zu>Ngiqinisekisa ukuthi ulwazi lwezempilo olunikezwe ngenhla luyiqiniso futhi luphelele ngokwazi kwami.</span>
+      </div>
+    </label>
+  </div>
+
+  <div id="healthAlert" class="alert alert-error"><span data-en>Please confirm your health declaration.</span><span data-zu>Sicela uqinisekise isimemezelo sakho sezempilo.</span></div>
+
+  <button class="btn btn-primary" onclick="goToStep4()"><span data-en>Continue to indemnity →</span><span data-zu>Qhubeka nesivumelwano →</span></button>
+  <button class="btn btn-secondary" onclick="showScreen('guest')"><span data-en>← Back</span><span data-zu>← Emuva</span></button>
+</div>
+
+<!-- SCREEN 4: INDEMNITY -->
+<div class="screen" id="screen-indemnity">
+  <div class="steps">
+    <div class="step done"><span data-en>1. Lodge</span><span data-zu>1. Ikhamu</span></div>
+    <div class="step done"><span data-en>2. Guest</span><span data-zu>2. Isivakashi</span></div>
+    <div class="step done"><span data-en>3. Health</span><span data-zu>3. Ezempilo</span></div>
+    <div class="step active"><span data-en>4. Indemnity</span><span data-zu>4. Isivumelwano</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-en>Indemnity &amp; liability waiver</span><span data-zu>Isivumelwano sokukhululwa kwemali</span></div>
+    <div class="card-subtitle"><span data-en>Please read carefully before signing</span><span data-zu>Sicela ufunde ngokucophelela ngaphambi kokusayina</span></div>
+
+    <div class="indemnity-box">
+      <div data-en>
+        <h4>INDEMNITY AND ASSUMPTION OF RISK</h4>
+        <p>I, the undersigned guest, acknowledge that I am about to participate in activities at Big Skies lodges within the iSimangaliso Wetland Park, a UNESCO World Heritage Site located in Maputaland, KwaZulu-Natal, Republic of South Africa. I understand that these activities may include, but are not limited to, guided walks, beach access, snorkelling, swimming, boat excursions, turtle tagging programmes, community engagement tours, and other nature-based experiences.</p>
+        <p>I acknowledge and accept that participation in these activities involves inherent risks, including but not limited to: exposure to wildlife and marine life; physical injury from uneven terrain; drowning or injury in aquatic environments; adverse weather conditions; remote location with limited access to emergency medical services; and unforeseen circumstances arising from the natural environment.</p>
+        <p>In consideration of being permitted to participate in activities at Big Skies lodges, I hereby voluntarily waive and release Big Skies (Pty) Ltd, its directors, employees, agents, community partners including the Kwampkane Community Trust, and all associated parties (collectively "Big Skies") from any and all claims, demands, actions, causes of action, damages, costs, or liability of any kind arising from personal injury, illness, death, or damage to property, whether caused by negligence or otherwise, in connection with my stay and participation in activities.</p>
+        <p>I confirm that I am physically fit and medically able to participate in the activities I have selected, or have disclosed relevant conditions above. I agree that Big Skies reserves the right to refuse participation in any activity where safety may be compromised.</p>
+        <p>I acknowledge that I am 18 years of age or older, or if under 18, that a parent or legal guardian is signing this form on my behalf and accepts responsibility accordingly. In respect of any minor travelling in my party, I confirm I have the legal authority to sign this waiver on their behalf.</p>
+        <p>This waiver is governed by the laws of the Republic of South Africa. By signing below, I confirm that I have read, understood, and voluntarily agree to this indemnity. This document does not exclude liability for gross negligence or intentional acts, as governed by the Consumer Protection Act 68 of 2008.</p>
+      </div>
+      <div data-zu>
+        <h4>ISIVUMELWANO SOKUKHULULWA KANYE NOKWAMUKELWA KOBUNGOZI</h4>
+        <p>Mina, umuntu osayinayo, ngiyavuma ukuthi ngizobamba iqhaza emisebenzini emakhamu e-Big Skies angaphakathi kwePaka ye-iSimangaliso Wetland, isiza se-UNESCO esidumile esiseMaputaland, KwaZulu-Natal, eNingizimu Afrika. Ngiyaqonda ukuthi le misebenzini ingabandakanya, kepha ingenqabezwa: ukuhamba okuqondisiwe, ukufinyelela ogwadule, ukubhukuda ngaphansi kwamanzi (snorkelling), ukubhukuda, izinhlelo zokuphawula oomfuduma (turtle tagging), nezinye izinto eziphathelene nemvelo.</p>
+        <p>Ngiyamukela ukuthi ukubamba iqhaza kule misebenzini kunezingozi ezisobala, kuhlanganise: ukuhlangana nezilwane zasendle nezasolwandle; ukulimala komzimba emhlabeni ongalingani; ukushona noma ukulimala emanzini; izimo zezulu ezingalindelekile; indawo ekude nayo futhi ingenayo insizakelo yezempilo ephuthumayo; kanye nezimo ezingalindelekile ezisuka emvelweni.</p>
+        <p>Ngiyakhulula Big Skies (Pty) Ltd, abaqondisi bayo, abasebenzi, amaejenti, abahlobo bemphakathi kuhlanganisa i-Kwampkane Community Trust, nakho konke okuhlotshaniswa nabo ("Big Skies") kuzo zonke izimangalo, izehlakalo, ukulimala, ukugula, ukufa, noma umonakalo wezinto, noma ngubani owabangela ukuwehluleka noma cha, okulotshiwe nokuhlangana nokwami nohlelo lokuhlala kanye nokubamba iqhaza emisebenzini.</p>
+        <p>Ngiqinisekisa ukuthi ngikhona emzimbeni futhi ngisemandleni ezempilo ukubamba iqhaza emisebenzini engikhethile, noma ngidedulele izimo ezibalulekile ngenhla. Ngiyavuma ukuthi i-Big Skies inelungelo lokwenqaba ukubamba iqhaza kunoma yimuphi umsebenzi lapho ukuphepha kungase kubhekane nezinkinga.</p>
+        <p>Ngiyavuma ukuthi ngineminyaka engu-18 noma ngaphezulu, noma uma ngingaphansi kwe-18, umzali noma umgcini osemthethweni usayina leli fomu egameni lami futhi amukela imbophezelo ngokufanele. Mayelana nangabe kunezingane ezihamba nami, ngiqinisekisa ukuthi nginegunya elisemthethweni lokusayina lesi sivumelwano egameni lazo.</p>
+        <p>Lesi sivumelwano siphethwe ngomthetho weRiphabhulikhi yaseNingizimu Afrika. Ngokusayina ngezansi, ngiqinisekisa ukuthi ngifunde, ngaqonda, futhi ngiyavuma ngokukhululeka lesi sivumelwano. Leli dokhumenti alivimbeli imbophezelo yobudlova obumangalisayo noma izenzo ezenziwa ngamabomu, njengoba kulawulwa yi-Consumer Protection Act 68 of 2008.</p>
+      </div>
+    </div>
+
+    <p class="scroll-hint"><span data-en>↑ Scroll to read the full indemnity before signing</span><span data-zu>↑ Skrolela phezulu ufunde isivumelwano esigcwele ngaphambi kokusayina</span></p>
+
+    <label class="checkbox-field">
+      <input type="checkbox" id="indemnityConfirm">
+      <div class="checkbox-field-text">
+        <span data-en>I have read and understood the full indemnity above. I voluntarily agree to its terms and conditions.</span>
+        <span data-zu>Ngifunde futhi ngaqonda isivumelwano sokukhululwa esingenhla. Ngiyavuma ngokukhululeka imibandela yaso.</span>
+      </div>
+    </label>
+
+    <label class="checkbox-field">
+      <input type="checkbox" id="minorConfirm">
+      <div class="checkbox-field-text">
+        <span data-en>Where applicable, I confirm I am signing on behalf of all minors in my travelling party and accept full responsibility for their participation.</span>
+        <span data-zu>Uma kuyisidingo, ngiyaqinisekisa ukuthi ngisayina egameni lezingane ezihamba nami futhi ngamukela imbophezelo ephelele yokuhlanganyela kwazo.</span>
+      </div>
+    </label>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span data-en>Signature</span><span data-zu>Isikhwama</span></div>
+    <div class="card-subtitle"><span data-en>Type your full name as your electronic signature</span><span data-zu>Bhala igama lakho eligcwele njengesikhwama sakho se-elektroniki</span></div>
+
+    <div class="sig-field">
+      <input type="text" id="signatureName" placeholder="Type your full name here to sign" autocomplete="off">
+      <div class="sig-date" id="sigDateDisplay"></div>
+    </div>
+  </div>
+
+  <div id="indemnityAlert" class="alert alert-error"><span data-en>Please confirm all declarations and provide your signature.</span><span data-zu>Sicela uqinisekise zonke izimemezelo bese unikeza isikhwama sakho.</span></div>
+
+  <button class="btn btn-primary" onclick="submitForm()"><span data-en>Submit &amp; save indemnity</span><span data-zu>Thumela futhi ulondoloze isivumelwano</span></button>
+  <button class="btn btn-secondary" onclick="showScreen('health')"><span data-en>← Back</span><span data-zu>← Emuva</span></button>
+</div>
+
+<!-- SCREEN: SUCCESS -->
+<div class="screen" id="screen-success">
+  <div class="success-screen">
+    <div class="success-icon">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 18l7 7 13-14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2><span data-en>Indemnity saved</span><span data-zu>Isivumelwano silondolozwe</span></h2>
+    <p id="successGuestName" style="font-weight: 500; color: var(--ink); font-size: 17px;"></p>
+    <p id="successLodge"></p>
+    <p id="successTime" style="font-size: 13px; margin-top: 8px;"></p>
+  </div>
+
+  <div style="padding: 0 0 24px;">
+    <div id="syncStatusCard" class="card" style="text-align: center;">
+      <p id="syncStatusText" style="font-size: 14px; color: var(--ink-mid);"></p>
+    </div>
+
+    <button class="btn btn-primary" onclick="startNew()"><span data-en>Check in next guest →</span><span data-zu>Ngena isivakashi esilandelayo →</span></button>
+    <button class="btn btn-secondary" onclick="showScreen('queue')"><span data-en>View queue</span><span data-zu>Buka umugqa</span></button>
+  </div>
+</div>
+
+<!-- SCREEN: QUEUE -->
+<div class="screen" id="screen-queue">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+      <h2 style="font-family: 'Playfair Display', serif; font-weight: 400; font-size: 22px; color: var(--forest);"><span data-en>Submission queue</span><span data-zu>Umugqa wokuthumela</span></h2>
+      <p style="font-size: 13px; color: var(--ink-light); margin-top: 2px;"><span data-en>Saved indemnities — export to sync with SharePoint</span><span data-zu>Izivumelwano ezilondolozwe — thumela ukuvumelanisa ne-SharePoint</span></p>
+    </div>
+    <button class="btn btn-secondary" style="width: auto; padding: 10px 16px; font-size: 14px;" onclick="showScreen('staff')">+ <span data-en>New</span><span data-zu>Okusha</span></button>
+  </div>
+
+  <div id="queueList"></div>
+
+  <div id="queueEmpty" class="empty-state" style="display:none;">
+    <div class="big-icon">📋</div>
+    <p><span data-en>No submissions yet.<br>Check in a guest to get started.</span><span data-zu>Awekho ukuthumelwa okwenziwe.<br>Ngena isivakashi ukuqala.</span></p>
+  </div>
+
+  <div id="exportSection" style="display:none;">
+    <div class="divider"></div>
+    <p style="font-size: 13px; color: var(--ink-light); margin-bottom: 12px;"><span data-en>Export all pending records as a JSON file. Send to reservations or upload to SharePoint manually.</span><span data-zu>Thumela yonke imirekodi elindile njengefayela le-JSON. Thumela ezibhukweni noma layisha ku-SharePoint ngesandla.</span></p>
+    <button class="btn btn-primary" onclick="exportJSON()"><span data-en>Export all as JSON file</span><span data-zu>Thumela konke njengefayela le-JSON</span></button>
+    <button class="btn btn-danger" onclick="confirmClear()"><span data-en>Clear exported records</span><span data-zu>Susa imirekodi ethunyiwe</span></button>
+  </div>
+</div>
+
+<script>
+  var state = {
+    lodge: '',
+    bookingRef: '',
+    adults: 0,
+    minors: 0
+  };
+
+  function setLang(lang) {
+    if (lang === 'zu') {
+      document.body.classList.add('lang-zu');
+      document.getElementById('btnZU').classList.add('active');
+      document.getElementById('btnEN').classList.remove('active');
+    } else {
+      document.body.classList.remove('lang-zu');
+      document.getElementById('btnEN').classList.add('active');
+      document.getElementById('btnZU').classList.remove('active');
+    }
+  }
+
+  function getSASTTime() {
+    var now = new Date();
+    var sast = new Date(now.toLocaleString('en-US', { timeZone: 'Africa/Johannesburg' }));
+    return sast;
+  }
+
+  function formatSASTDisplay(date) {
+    var d = date || getSASTTime();
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var hours = d.getHours();
+    var mins = d.getMinutes().toString().padStart(2,'0');
+    var ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ' · ' + hours + ':' + mins + ' ' + ampm + ' SAST';
+  }
+
+  function formatISO(date) {
+    return date.toISOString();
+  }
+
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById('screen-' + name).classList.add('active');
+    window.scrollTo(0, 0);
+    if (name === 'queue') renderQueue();
+    updateQueueBadge();
+  }
+
+  function selectLodge(lodge, btn) {
+    state.lodge = lodge;
+    document.querySelectorAll('.lodge-btn').forEach(function(b){ b.classList.remove('selected'); });
+    btn.classList.add('selected');
+  }
+
+  function changeCount(type, delta) {
+    if (type === 'adults') {
+      state.adults = Math.max(0, state.adults + delta);
+      document.getElementById('adultsCount').textContent = state.adults;
+    } else {
+      state.minors = Math.max(0, state.minors + delta);
+      document.getElementById('minorsCount').textContent = state.minors;
+      document.getElementById('minorGuardianField').style.display = state.minors > 0 ? 'block' : 'none';
+    }
+  }
+
+  function goToStep2() {
+    var ref = document.getElementById('bookingRef').value.trim();
+    var alert = document.getElementById('staffAlert');
+    if (!state.lodge || !ref) {
+      alert.classList.add('show');
+      return;
+    }
+    alert.classList.remove('show');
+    state.bookingRef = ref;
+    showScreen('guest');
+  }
+
+  function goToStep3() {
+    var name = document.getElementById('guestName').value.trim();
+    var nationality = document.getElementById('guestNationality').value.trim();
+    var id = document.getElementById('guestID').value.trim();
+    var emName = document.getElementById('emergencyName').value.trim();
+    var emRel = document.getElementById('emergencyRelation').value;
+    var emPhone = document.getElementById('emergencyPhone').value.trim();
+    var minors = state.minors;
+    var guardianOk = minors === 0 || document.getElementById('guardianStatus').value;
+    var alert = document.getElementById('guestAlert');
+    if (!name || !nationality || !id || !emName || !emRel || !emPhone || !guardianOk) {
+      alert.classList.add('show');
+      alert.textContent = guardianOk ? 'Please complete all required fields.' : 'Please confirm your guardian status for the minors in your party.';
+      return;
+    }
+    alert.classList.remove('show');
+    showScreen('health');
+  }
+
+  function goToStep4() {
+    var confirmed = document.getElementById('healthConfirm').checked;
+    var alert = document.getElementById('healthAlert');
+    if (!confirmed) { alert.classList.add('show'); return; }
+    alert.classList.remove('show');
+    var now = getSASTTime();
+    document.getElementById('sigDateDisplay').textContent = 'Date: ' + formatSASTDisplay(now);
+    showScreen('indemnity');
+  }
+
+  function submitForm() {
+    var indemnityOk = document.getElementById('indemnityConfirm').checked;
+    var minorOk = document.getElementById('minorConfirm').checked;
+    var sig = document.getElementById('signatureName').value.trim();
+    var alert = document.getElementById('indemnityAlert');
+
+    if (!indemnityOk || !minorOk || !sig) {
+      alert.classList.add('show');
+      alert.textContent = !sig ? 'Please type your full name as your signature.' : 'Please confirm all declarations before signing.';
+      return;
+    }
+    alert.classList.remove('show');
+
+    var now = getSASTTime();
+    var submission = {
+      id: 'BS-' + now.getFullYear() + '-' + Date.now(),
+      timestamp: formatISO(now),
+      timestampDisplay: formatSASTDisplay(now),
+      status: 'pending',
+      lodge: state.lodge,
+      bookingRef: state.bookingRef,
+      guest: {
+        name: document.getElementById('guestName').value.trim(),
+        nationality: document.getElementById('guestNationality').value.trim(),
+        idPassport: document.getElementById('guestID').value.trim(),
+        email: document.getElementById('guestEmail').value.trim()
+      },
+      party: {
+        additionalAdults: state.adults,
+        minors: state.minors,
+        guardianStatus: state.minors > 0 ? document.getElementById('guardianStatus').value : 'N/A'
+      },
+      emergency: {
+        name: document.getElementById('emergencyName').value.trim(),
+        relationship: document.getElementById('emergencyRelation').value,
+        phone: document.getElementById('emergencyPhone').value.trim()
+      },
+      health: {
+        medicalConditions: document.getElementById('medicalConditions').value.trim() || 'None declared',
+        allergies: document.getElementById('allergies').value.trim() || 'None declared',
+        medications: document.getElementById('medications').value.trim() || 'None declared'
+      },
+      indemnity: {
+        confirmed: true,
+        minorConfirmed: true,
+        signatureName: sig,
+        signedAt: formatISO(now)
+      }
+    };
+
+    var queue = getQueue();
+    queue.push(submission);
+    localStorage.setItem('bigskies_queue', JSON.stringify(queue));
+
+    document.getElementById('successGuestName').textContent = submission.guest.name;
+    document.getElementById('successLodge').textContent = 'Big Skies ' + submission.lodge + ' · Booking: ' + submission.bookingRef;
+    document.getElementById('successTime').textContent = submission.timestampDisplay;
+
+    var online = navigator.onLine;
+    document.getElementById('syncStatusText').textContent = online
+      ? 'Connected — record saved locally. Export when ready to sync with SharePoint.'
+      : 'Offline — record saved locally. It will be ready to export when you reconnect.';
+
+    updateQueueBadge();
+    showScreen('success');
+  }
+
+  function startNew() {
+    state = { lodge: '', bookingRef: '', adults: 0, minors: 0 };
+    document.querySelectorAll('.lodge-btn').forEach(function(b){ b.classList.remove('selected'); });
+    ['bookingRef','guestName','guestNationality','guestID','guestEmail',
+     'emergencyName','emergencyPhone','medicalConditions','allergies','medications','signatureName'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('emergencyRelation').value = '';
+    document.getElementById('guardianStatus').value = '';
+    document.getElementById('adultsCount').textContent = '0';
+    document.getElementById('minorsCount').textContent = '0';
+    document.getElementById('minorGuardianField').style.display = 'none';
+    document.getElementById('healthConfirm').checked = false;
+    document.getElementById('indemnityConfirm').checked = false;
+    document.getElementById('minorConfirm').checked = false;
+    document.querySelectorAll('.alert').forEach(function(a){ a.classList.remove('show'); });
+    showScreen('staff');
+  }
+
+  function getQueue() {
+    try { return JSON.parse(localStorage.getItem('bigskies_queue') || '[]'); } catch(e) { return []; }
+  }
+
+  function updateQueueBadge() {
+    var queue = getQueue();
+    var pending = queue.filter(function(s){ return s.status === 'pending'; }).length;
+    document.getElementById('queueCount').textContent = pending > 0 ? pending + ' pending' : queue.length + ' saved';
+    document.getElementById('queueDot').className = 'queue-dot' + (pending > 0 ? ' pending' : '');
+  }
+
+  function renderQueue() {
+    var queue = getQueue();
+    var list = document.getElementById('queueList');
+    var empty = document.getElementById('queueEmpty');
+    var exportSec = document.getElementById('exportSection');
+    list.innerHTML = '';
+    if (queue.length === 0) {
+      empty.style.display = 'block';
+      exportSec.style.display = 'none';
+      return;
+    }
+    empty.style.display = 'none';
+    exportSec.style.display = 'block';
+    queue.slice().reverse().forEach(function(s) {
+      var item = document.createElement('div');
+      item.className = 'queue-item';
+      item.innerHTML = '<div class="queue-item-info">' +
+        '<div class="queue-item-name">' + s.guest.name + '</div>' +
+        '<div class="queue-item-meta">Big Skies ' + s.lodge + ' · ' + s.bookingRef + ' · ' + s.timestampDisplay + '</div>' +
+        '</div>' +
+        '<span class="status-pill status-' + s.status + '">' + s.status + '</span>';
+      list.appendChild(item);
+    });
+  }
+
+  function exportJSON() {
+    var queue = getQueue();
+    var pending = queue.filter(function(s){ return s.status === 'pending'; });
+    if (pending.length === 0) { alert('No pending records to export.'); return; }
+    var now = getSASTTime();
+    var filename = 'BigSkies_Indemnities_' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + '.json';
+    var blob = new Blob([JSON.stringify(pending, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+    queue = queue.map(function(s){ return Object.assign({}, s, { status: s.status === 'pending' ? 'exported' : s.status }); });
+    localStorage.setItem('bigskies_queue', JSON.stringify(queue));
+    renderQueue();
+    updateQueueBadge();
+  }
+
+  function confirmClear() {
+    var queue = getQueue();
+    var exported = queue.filter(function(s){ return s.status === 'exported'; });
+    if (exported.length === 0) { alert('No exported records to clear.'); return; }
+    if (confirm('Remove ' + exported.length + ' exported record(s) from this device? Ensure they have been saved to SharePoint first.')) {
+      var remaining = queue.filter(function(s){ return s.status !== 'exported'; });
+      localStorage.setItem('bigskies_queue', JSON.stringify(remaining));
+      renderQueue();
+      updateQueueBadge();
+    }
+  }
+
+  window.addEventListener('online', function(){
+    document.getElementById('offlineBanner').classList.remove('show');
+    updateQueueBadge();
+  });
+  window.addEventListener('offline', function(){
+    document.getElementById('offlineBanner').classList.add('show');
+  });
+
+  if (!navigator.onLine) {
+    document.getElementById('offlineBanner').classList.add('show');
+  }
+
+  updateQueueBadge();
+</script>
+</body>
+</html>
