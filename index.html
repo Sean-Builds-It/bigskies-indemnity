@@ -657,42 +657,6 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title"><span data-en>Travelling party</span><span data-zu>Abantu abahamba nabo</span></div>
-    <div class="card-subtitle"><span data-en>Tell us who is travelling with you</span><span data-zu>Sazise ukuthi ubani ohamba nawe</span></div>
-
-    <div class="section-heading"><span data-en>Additional adults</span><span data-zu>Abantu abadala obangeziwe</span></div>
-    <div class="counter-row" style="margin-bottom: 12px;">
-      <div class="counter-label"><span data-en>Adults (18+) besides primary guest</span><span data-zu>Abantu abadala ngaphandle komnini</span></div>
-      <div class="counter-controls">
-        <button class="counter-btn" onclick="changeCount('adults', -1)">−</button>
-        <span class="counter-value" id="adultsCount">0</span>
-        <button class="counter-btn" onclick="changeCount('adults', 1)">+</button>
-      </div>
-    </div>
-
-    <div class="section-heading"><span data-en>Minors travelling</span><span data-zu>Izingane ezihamba nabo</span></div>
-    <div class="counter-row">
-      <div class="counter-label"><span data-en>Children under 18</span><span data-zu>Izingane ezineminyaka engaphansi kwa-18</span></div>
-      <div class="counter-controls">
-        <button class="counter-btn" onclick="changeCount('minors', -1)">−</button>
-        <span class="counter-value" id="minorsCount">0</span>
-        <button class="counter-btn" onclick="changeCount('minors', 1)">+</button>
-      </div>
-    </div>
-
-    <div id="minorGuardianField" style="display:none; margin-top: 14px;">
-      <div class="field">
-        <label><span data-en>Guardian / parent confirmation</span><span data-zu>Ukuqinisekisa komzali noma umgcini</span> <span class="req">*</span></label>
-        <select id="guardianStatus">
-          <option value=""><span data-en>Select...</span></option>
-          <option value="parent"><span data-en>I am the parent of all minors listed</span></option>
-          <option value="guardian"><span data-en>I am the legal guardian of all minors listed</span></option>
-          <option value="consent"><span data-en>I have written consent from parents / guardians</span></option>
-        </select>
-      </div>
-    </div>
-  </div>
 
   <div id="guestAlert" class="alert alert-error"><span data-en>Please complete all required fields.</span><span data-zu>Sicela ugcwalise wonke amasimu adingekayo.</span></div>
 
@@ -869,8 +833,7 @@
   var state = {
     lodge: '',
     bookingRef: '',
-    adults: 0,
-    minors: 0
+
   };
 
   function setLang(lang) {
@@ -920,17 +883,6 @@
     btn.classList.add('selected');
   }
 
-  function changeCount(type, delta) {
-    if (type === 'adults') {
-      state.adults = Math.max(0, state.adults + delta);
-      document.getElementById('adultsCount').textContent = state.adults;
-    } else {
-      state.minors = Math.max(0, state.minors + delta);
-      document.getElementById('minorsCount').textContent = state.minors;
-      document.getElementById('minorGuardianField').style.display = state.minors > 0 ? 'block' : 'none';
-    }
-  }
-
   function goToStep2() {
     var ref = document.getElementById('bookingRef').value.trim();
     var alert = document.getElementById('staffAlert');
@@ -950,12 +902,10 @@
     var emName = document.getElementById('emergencyName').value.trim();
     var emRel = document.getElementById('emergencyRelation').value;
     var emPhone = document.getElementById('emergencyPhone').value.trim();
-    var minors = state.minors;
-    var guardianOk = minors === 0 || document.getElementById('guardianStatus').value;
     var alert = document.getElementById('guestAlert');
-    if (!name || !nationality || !id || !emName || !emRel || !emPhone || !guardianOk) {
+    if (!name || !nationality || !id || !emName || !emRel || !emPhone) {
       alert.classList.add('show');
-      alert.textContent = guardianOk ? 'Please complete all required fields.' : 'Please confirm your guardian status for the minors in your party.';
+      alert.textContent = 'Please complete all required fields.';
       return;
     }
     alert.classList.remove('show');
@@ -999,11 +949,6 @@
         idPassport: document.getElementById('guestID').value.trim(),
         email: document.getElementById('guestEmail').value.trim()
       },
-      party: {
-        additionalAdults: state.adults,
-        minors: state.minors,
-        guardianStatus: state.minors > 0 ? document.getElementById('guardianStatus').value : 'N/A'
-      },
       emergency: {
         name: document.getElementById('emergencyName').value.trim(),
         relationship: document.getElementById('emergencyRelation').value,
@@ -1040,7 +985,7 @@
   }
 
   function startNew() {
-    state = { lodge: '', bookingRef: '', adults: 0, minors: 0 };
+    state = { lodge: '', bookingRef: '' };
     document.querySelectorAll('.lodge-btn').forEach(function(b){ b.classList.remove('selected'); });
     ['bookingRef','guestName','guestNationality','guestID','guestEmail',
      'emergencyName','emergencyPhone','medicalConditions','allergies','medications','signatureName'].forEach(function(id){
@@ -1048,10 +993,7 @@
       if (el) el.value = '';
     });
     document.getElementById('emergencyRelation').value = '';
-    document.getElementById('guardianStatus').value = '';
-    document.getElementById('adultsCount').textContent = '0';
-    document.getElementById('minorsCount').textContent = '0';
-    document.getElementById('minorGuardianField').style.display = 'none';
+
     document.getElementById('healthConfirm').checked = false;
     document.getElementById('indemnityConfirm').checked = false;
     document.getElementById('minorConfirm').checked = false;
