@@ -1145,6 +1145,12 @@
     document.getElementById('offlineBanner').classList.add('show');
   }
 
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/bigskies-indemnity/sw.js');
+    });
+  }
+
   updateQueueBadge();
   attachValidation();
 </script>
